@@ -1,0 +1,38 @@
+<!-- main/templates/main/hospital_login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Home - Parkinson's Diagnosis</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Parkinson's Diagnosis - Hospital</h1>
+        <nav>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <section id="diagnosis-section">
+            <h2>Input Patient Parameters</h2>
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Submit</button>
+            </form>
+            {% if result is not None %}
+                <div id="diagnosis-result">
+                    <h3>Diagnosis Result</h3>
+                    <p>The likelihood of Parkinson's is: <strong>{{ result|floatformat:2 }}</strong></p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Parkinson's Prediction System</p>
+    </footer>
+</body>
+</html>

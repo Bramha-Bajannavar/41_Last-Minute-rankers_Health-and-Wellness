@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Parkinson's Prediction</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Parkinson's Prediction System</h1>
+        <nav>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <!-- Parameter Input Form -->
+        <section id="prediction-section">
+            <h2>Input Patient Parameters</h2>
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Submit</button>
+            </form>
+            {% if result is not None %}
+                <div id="prediction-result">
+                    <h3>Prediction Result</h3>
+                    <p>The likelihood of Parkinson's is: <strong>{{ result|floatformat:2 }}</strong></p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Chatbot Section -->
+        <section id="chatbot-section">
+            <h2>Chatbot Assistance</h2>
+            <div id="chatbox">
+                <div id="messages">
+                    <!-- Chat messages will appear here -->
+                </div>
+                <form id="chatbot-form">
+                    <input type="text" id="user-message" placeholder="Type your question..." required>
+                    <button type="button" id="send-message">Send</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Parkinson's Prediction System</p>
+    </footer>
+
+    <script src="{% static 'main/js/chatbot.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!-- main/templates/landing.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Parkinson's Prediction System</h1>
+    </header>
+    <main>
+        <section id="landing-section">
+            <a href="{% url 'patient_login' %}">Patient Login</a>
+            <a href="{% url 'hospital_login' %}">Hospital Login</a>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Parkinson's Prediction System</p>
+    </footer>
+</body>
+</html>
