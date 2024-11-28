@@ -4,25 +4,33 @@
 # In[102]:
 
 
-# Load the saved model and scaler
-with open('parkinsons_model.pkl', 'rb') as model_file:
+import os
+import pickle
+import pyaudio
+import wave
+
+# Define the complete path to the .pkl files
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, 'main/models/parkinsons_model.pkl')
+SCALER_PATH = os.path.join(BASE_DIR, 'main/models/scaler.pkl')
+IMPUTER_PATH = os.path.join(BASE_DIR, 'main/models/imputer.pkl')
+
+# Load the model and scaler from pickle files
+with open(MODEL_PATH, 'rb') as model_file:
     model = pickle.load(model_file)
 
-with open('scaler.pkl', 'rb') as scaler_file:
+with open(SCALER_PATH, 'rb') as scaler_file:
     scaler = pickle.load(scaler_file)
 
 # Load the saved imputer (to handle missing values in the features)
-with open('imputer.pkl', 'rb') as imputer_file:
+with open(IMPUTER_PATH, 'rb') as imputer_file:
     imputer = pickle.load(imputer_file)
 
 
 # In[103]:
 
 
-import pyaudio
-import wave
-
-def record_audio(filename='user_audio.wav', duration=5, sample_rate=16000):
+def record_audio(filename='user_audio.wav', duration=25, sample_rate=16000):
     """Record audio from the microphone and save it as a .wav file."""
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=sample_rate, input=True, frames_per_buffer=1024)
@@ -49,8 +57,6 @@ def record_audio(filename='user_audio.wav', duration=5, sample_rate=16000):
         wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
         wf.setframerate(sample_rate)
         wf.writeframes(b''.join(frames))
-
-record_audio()
 
 
 # In[104]:
@@ -114,14 +120,13 @@ def predict_parkinsons(audio_file):
     print("Making prediction...")
     prediction = model.predict(features_scaled)
     prediction_proba = model.predict_proba(features_scaled)
-    # print(f"Prediction: {prediction}")
     print(f"Prediction probabilities: {prediction_proba[0]}")
 
-    # Print final result
-    if prediction_proba[0][0]>0.7:
-        print(f"Prediction: Parkinson's disease detected with probability {prediction_proba[0][1]:.2f}")
+    # Return final result
+    if prediction_proba[0][0] > 0.7:
+        return f"Parkinson's disease detected with probability {prediction_proba[0][1]:.2f}"
     else:
-        print(f"Prediction: No Parkinson's disease detected with probability {prediction_proba[0][0]:.2f}")
+        return f"No Parkinson's disease detected with probability {prediction_proba[0][0]:.2f}"
 
 
 # In[107]:

@@ -9,8 +9,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from .models import Profile
 from django.db import IntegrityError
 from .test3 import predict  # Import the predict function from the Python script
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect  # Add this import
 import json
+from .Voice import record_audio, predict_parkinsons
 
 def signup_view(request):
     if request.method == 'POST':
@@ -35,9 +36,8 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
-            else:
-                return render(request, 'main/login.html', {'form': form, 'error': 'Invalid username or password'})
+                return redirect('recording')  # Redirect to recording page after successful login
+        return render(request, 'main/login.html', {'form': form, 'error': 'Invalid credentials'})
     else:
         form = AuthenticationForm()
     return render(request, 'main/login.html', {'form': form})
@@ -63,35 +63,24 @@ def logout_view(request):
     return redirect('landing')
 
 @login_required
-def home(request):
-    result = None
-    if request.method == 'POST':
-        form = ParameterForm(request.POST)
-        if form.is_valid():
-            # Placeholder for prediction logic
-            inputs = [form.cleaned_data[key] for key in form.cleaned_data]
-            result = sum(inputs)  # Replace with actual model prediction
-    else:
-        form = ParameterForm()
-    return render(request, 'main/home.html', {'form': form, 'result': result})
-
+def home_view(request):
+    return render(request, 'main/home.html')
 
 @login_required
 def hospital_home(request):
     if request.method == 'POST':
         form = HospitalParameterForm(request.POST)
         if form.is_valid():
-            # Extract the form data
             data = [form.cleaned_data[key] for key in form.cleaned_data]
-            # Process the input data using the predict function from the Python script
             chances = predict(data)
             return JsonResponse({'chances': chances})
     else:
         form = HospitalParameterForm()
     return render(request, 'main/hospital_home.html', {'form': form})
 
+@login_required
 def result_view(request, result):
-    result = float(result)  # Convert the result to float
+    result = float(result)
     return render(request, 'main/result.html', {'result': result})
 
 def chatbot_api(request):
@@ -100,8 +89,6 @@ def chatbot_api(request):
 
 def landing(request):
     return render(request, 'main/landing.html')
-
-
 
 @csrf_exempt
 def process_parameters(request):
@@ -128,3 +115,17 @@ def process_parameters(request):
             print("Error occurred:", str(e))  # Log the error
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method."})
+
+@csrf_exempt
+def record_voice(request):
+    if request.method == 'POST':
+        audio_file = 'user_audio.wav'
+        record_audio(filename=audio_file, duration=25)  # Record for 25 seconds
+        prediction = predict_parkinsons(audio_file)
+        return JsonResponse({'status': 'Recording complete', 'prediction': prediction})
+    return JsonResponse({'status': 'Invalid request'}, status=400)
+
+@login_required
+def recording_view(request):
+    return render(request, 'main/recording.html')
+

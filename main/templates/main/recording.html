@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recording</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .recording-section {
+            margin-bottom: 2rem;
+        }
+        .timer {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .recording-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .recording-indicator.active {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="recording-section">
+            <h2>Voice Recording</h2>
+            
+            <div id="timer" class="timer">25</div>
+            
+            <button id="recordButton">
+                <span class="recording-indicator"></span>
+                Start Recording
+            </button>
+            
+            <div id="status" class="status">Ready to record</div>
+            <div id="result" class="result"></div>
+        </section>
+        
+        <section class="reading-section">
+            <h2>Read the following paragraph:</h2>
+            <p class="paragraph-text">
+                The quick brown fox jumps over the lazy dog near a quiet riverbank. As the sun sets, the calm breeze rustles the leaves, creating a soothing sound. In the distance, a clock tower chimes, marking the end of another day. Every moment counts, and every word we speak carries a meaning, shaping the world around us. Speak clearly, and let your voice express the thoughts within your mind.
+            </p>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('recordButton').addEventListener('click', async () => {
+            const timerElement = document.getElementById('timer');
+            const statusElement = document.getElementById('status');
+            const resultElement = document.getElementById('result');
+            const recordingIndicator = document.querySelector('.recording-indicator');
+            let timeLeft = 25;
+
+            // Update the timer every second
+            const timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                } else {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+
+            // Start recording
+            statusElement.textContent = 'Recording...';
+            recordingIndicator.classList.add('active');
+
+            try {
+                const response = await fetch("{% url 'record_voice' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                });
+                const result = await response.json();
+                statusElement.textContent = 'Recording complete';
+                recordingIndicator.classList.remove('active');
+                resultElement.textContent = result.prediction;  // Display the prediction result
+            } catch (error) {
+                console.error('Error:', error);
+                statusElement.textContent = 'Error during recording';
+                recordingIndicator.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
