@@ -4,51 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Parkinson's Prediction</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: rgb(208, 208, 222); /* Set the background color */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container to split the screen into two halves */
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Left half styles */
+        .left-half, .right-half {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .left-half {
+            background-color: rgb(208, 208, 222);
+        }
+
+        .right-half {
+            background-color: rgb(208, 208, 222);
+        }
+
+        /* Text section styles */
+        .text-section {
+            text-align: center;
+        }
+
+        .text-section h2 {
+            color: #333;
+            font-size: 20px;
+            margin: 0 0 10px;
+        }
+
+        .text-section p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Box styles */
+        .box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 4px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Parkinson's Prediction System</h1>
-        <nav>
-            <a href="{% url 'logout' %}">Logout</a>
-        </nav>
-    </header>
-    <main>
-        <!-- Parameter Input Form -->
-        <section id="prediction-section">
-            <h2>Input Patient Parameters</h2>
-            <form method="post" action="">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Submit</button>
-            </form>
-            {% if result is not None %}
-                <div id="prediction-result">
-                    <h3>Prediction Result</h3>
-                    <p>The likelihood of Parkinson's is: <strong>{{ result|floatformat:2 }}</strong></p>
-                </div>
-            {% endif %}
-        </section>
-
-        <!-- Chatbot Section -->
-        <section id="chatbot-section">
-            <h2>Chatbot Assistance</h2>
-            <div id="chatbox">
-                <div id="messages">
-                    <!-- Chat messages will appear here -->
-                </div>
-                <form id="chatbot-form">
-                    <input type="text" id="user-message" placeholder="Type your question..." required>
-                    <button type="button" id="send-message">Send</button>
+    <div class="container">
+        <div class="left-half">
+            <div class="text-section">
+                <h2>Welcome to the Parkinson's Prediction System</h2>
+            </div>
+        </div>
+        <div class="right-half">
+            <div class="box">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="input1">Input 1:</label>
+                        <input type="text" id="input1" name="input1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="input2">Input 2:</label>
+                        <input type="text" id="input2" name="input2" required>
+                    </div>
+                    <button type="submit">Submit</button>
                 </form>
             </div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 Parkinson's Prediction System</p>
-    </footer>
-
-    <script src="{% static 'main/js/chatbot.js' %}"></script>
+        </div>
+    </div>
 </body>
 </html>
